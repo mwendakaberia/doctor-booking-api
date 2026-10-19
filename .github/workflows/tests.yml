@@ -16,7 +16,7 @@ jobs:
         image: postgres:16
         env:
           POSTGRES_USER: doctor_api
-          POSTGRES_PASSWORD: 7mwepaka
+          POSTGRES_PASSWORD: doctor_test_password
           POSTGRES_DB: doctor_booking_test
         ports:
           - 5432:5432
@@ -27,8 +27,8 @@ jobs:
           --health-retries 5
 
     env:
-      DATABASE_URL: postgresql+psycopg://doctor_api:7mwepaka@localhost:5432/doctor_booking_test
-      TEST_DATABASE_URL: postgresql+psycopg://doctor_api:7mwepaka@localhost:5432/doctor_booking_test
+      DATABASE_URL: postgresql+psycopg://doctor_api:doctor_test_password@localhost:5432/doctor_booking_test
+      TEST_DATABASE_URL: postgresql+psycopg://doctor_api:doctor_test_password@localhost:5432/doctor_booking_test
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
