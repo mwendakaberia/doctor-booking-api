@@ -1,39 +1,43 @@
-Doctor Booking API
+# Doctor Booking API
 
-NOTE: Since I’m using the free subscription plan of Render, the deployed API will be automatically deleted on November 18, 2026. In case you are reviewing the assignment past this date, kindly let me know so I can redeploy it again.
+**NOTE: Since I’m using the free subscription plan of Render, the deployed API will be automatically deleted on November 18, 2026. In case you are reviewing the assignment past this date, kindly let me know so I can redeploy it again.**
 
-Public URL for Deployed API: https://doctor-booking-api-e97r.onrender.com/docs
-GitHub URL: https://github.com/mwendakaberia/doctor-booking-api
+**Public URL for Deployed API:** https://doctor-booking-api-e97r.onrender.com/docs  
+**GitHub URL:** https://github.com/mwendakaberia/doctor-booking-api  
 
 A RESTful clinic appointment booking API built with FastAPI and PostgreSQL. The application supports appointment booking, doctor availability lookup, cancellation, rescheduling, and retrieval of upcoming patient appointments.
 The project demonstrates REST API development, relational database design, validation, automated testing, database migrations, cloud deployment, and CI/CD automation.
-1. Features
-•	Book appointments with doctors.
-•	Retrieve a doctor's available appointment slots for a specified date.
-•	Cancel appointments with a cancellation reason.
-•	Reschedule existing appointments.
-•	Retrieve a patient's upcoming appointments in chronological order.
-•	Validate doctor working hours and appointment start times.
-•	Reject appointments in the past and appointments scheduled within the next hour.
-•	Prevent duplicate active bookings for the same doctor and start time.
-•	Reopen a time slot when an appointment is cancelled.
-•	Prevent rescheduling cancelled appointments.
-•	Use database migrations to manage schema changes.
-•	Run automated tests before deploying changes to production.
-2. Technology Stack
-Component	Technology
-Programming language	Python 3.10
-API framework	FastAPI
-Data validation	Pydantic
-ORM	SQLAlchemy
-Database	PostgreSQL
-Schema migrations	Alembic
-Automated testing	Pytest
-CI/CD	GitHub Actions
-Hosting	Render
-API documentation	OpenAPI / Swagger UI
-3. System Design
+
+## 1. Features
+-	Book appointments with doctors.
+-	Retrieve a doctor's available appointment slots for a specified date.
+-	Cancel appointments with a cancellation reason.
+-	Reschedule existing appointments.
+-	Retrieve a patient's upcoming appointments in chronological order.
+-	Validate doctor working hours and appointment start times.
+-	Reject appointments in the past and appointments scheduled within the next hour.
+-	Prevent duplicate active bookings for the same doctor and start time.
+-	Reopen a time slot when an appointment is cancelled.
+-	Prevent rescheduling cancelled appointments.
+-	Use database migrations to manage schema changes.
+-	Run automated tests before deploying changes to production.
+
+## 2. Technology Stack
+- Component	Technology
+- Programming language	Python 3.10
+- API framework	FastAPI
+- Data validation	Pydantic
+- ORM	SQLAlchemy
+- Database	PostgreSQL
+- Schema migrations	Alembic
+- Automated testing	Pytest
+- CI/CD	GitHub Actions
+- Hosting	Render
+- API documentation	OpenAPI / Swagger UI
+
+## 3. System Design
 The application separates HTTP request handling, business rules, database access, and data validation.
+
 Client / API Consumer
         
         
@@ -53,67 +57,82 @@ SQLAlchemy ORM
         
         
 PostgreSQL Database
-Main components
-•	Routes: Expose the REST endpoints and translate incoming requests into service operations.
-•	Schemas: Validate request data and define API response structures.
-•	Service layer: Enforces appointment rules, validates availability and handles booking, cancellation and rescheduling.
-•	Models: Define doctors, patients, working hours, and appointments.
-•	Alembic: Manages database schema migrations.
-•	Tests: Verify key booking workflows and validation behavior using a separate test database.
-•	GitHub Actions: Runs automated tests and triggers a Render deployment only after the tests pass on a push to main.
-Database design
-The database contains four main entities:
-•	Doctors: Doctor information and active status.
-•	Patients: Patient information and email address.
-•	Doctor working hours: The days and times during which a doctor is available.
-•	Appointments: Patient, doctor, appointment time, status, cancellation reason, and timestamps.
+
+**Main components**  
+- ***Routes:*** Expose the REST endpoints and translate incoming requests into service operations.  
+- ***Schemas:*** Validate request data and define API response structures.  
+- ***Service layer:*** Enforces appointment rules, validates availability and handles booking, cancellation and rescheduling.  
+- ***Models:*** Define doctors, patients, working hours, and appointments.  
+- ***Alembic:*** Manages database schema migrations.  
+- ***Tests:*** Verify key booking workflows and validation behavior using a separate test database.  
+- ***GitHub Actions:*** Runs automated tests and triggers a Render deployment only after the tests pass on a push to main.  
+
+**Database design**  
+The database contains four main entities:  
+- ***Doctors:*** Doctor information and active status.
+- ***Patients:*** Patient information and email address.
+- ***Doctor working hours:*** The days and times during which a doctor is available.
+- ***Appointments:*** Patient, doctor, appointment time, status, cancellation reason, and timestamps.  
 An appointment has a booked or cancelled status. A partial unique database index prevents two active appointments from being created for the same doctor at the same start time.
-4. API Endpoints
-Interactive API documentation is available at /docs when the application is running.
-https://doctor-booking-api-e97r.onrender.com/docs
-Method	Endpoint	Purpose
-GET	/	Check the application root
-GET	/health	Health check
-POST	/appointments	Book an appointment
-GET	/doctors/{doctor_id}/availability?date=YYYY-MM-DD	Retrieve available slots
-PATCH	/appointments/{appointment_id}/cancel	Cancel an appointment
-PATCH	/appointments/{appointment_id}/reschedule	Reschedule an appointment
-GET	/patients/{patient_id}/appointments	Retrieve upcoming patient appointments
-4.1 Book an appointment
-Request
+
+## 4. API Endpoints
+Interactive API documentation is available at ***/docs*** when the application is running.  
+https://doctor-booking-api-e97r.onrender.com/docs  
+
+| **Method** | **Endpoint** | **Purpose** |
+|------------|--------------|-------------|
+|GET	|/	|Check the application root|
+|GET	|/health	|Health check|
+|POST	|/appointments	|Book an appointment|
+|GET	|/doctors/{doctor_id}/availability?date=YYYY-MM-DD	|Retrieve available slots|
+|PATCH	|/appointments/{appointment_id}/cancel	|Cancel an appointment|
+|PATCH	|/appointments/{appointment_id}/reschedule	|Reschedule an appointment|
+|GET	|/patients/{patient_id}/appointments	|Retrieve upcoming patient appointments|
+### 4.1 Book an appointment
+***Request***
+```
 POST /appointments
 {
   "doctor_id": 1,
   "patient_id": 1,
   "start_at": "2026-10-20T10:00:00+03:00"
 }
-The IDs must refer to existing records, and start_at must include a timezone offset. The example date is illustrative; a real request must use a valid future slot within the doctor's working hours and satisfy the advance-notice rule.
-Expected result: 201 Created, containing the created appointment.
-4.2 Check doctor availability
-Request
+```  
+The IDs must refer to existing records, and start_at must include a timezone offset. The example date is illustrative; a real request must use a valid future slot within the doctor's working hours and satisfy the advance-notice rule.  
+***Expected result:*** 201 Created, containing the created appointment.
+### 4.2 Check doctor availability
+***Request***
+```
 GET /doctors/1/availability?date=2026-10-20
+```
 Returns available 30-minute appointment slots for the specified date, subject to the doctor's configured working hours, existing active appointments, and the one-hour advance-notice rule.
-4.3 Cancel an appointment
-Request
+### 4.3 Cancel an appointment
+***Request***
+```
 PATCH /appointments/1/cancel
 {
   "reason": "Patient requested cancellation."
 }
+```
 A successful cancellation changes the appointment status to cancelled and records the reason. The cancelled appointment no longer blocks its time slot.
 An appointment that has already been cancelled cannot be cancelled again.
-4.4 Reschedule an appointment
-Request
+### 4.4 Reschedule an appointment
+***Request***
+```
 PATCH /appointments/1/reschedule
 {
   "start_at": "2026-10-20T11:00:00+03:00"
 }
+````
 The new time is validated against the doctor's working hours, existing bookings, and appointment timing rules. A cancelled appointment cannot be rescheduled.
-If the requested time is invalid, the existing booking should remain unchanged.
-4.5 Retrieve a patient's upcoming appointments
-Request
+If the requested time is invalid, the existing booking should remain unchanged.  
+### 4.5 Retrieve a patient's upcoming appointments
+***Request***
+```
 GET /patients/1/appointments
+```
 Returns the patient's upcoming booked appointments in ascending order of appointment time.
-5. Validation and Error Handling
+## 5. Validation and Error Handling
 The API enforces the following business rules:
 1.	The doctor and patient must exist.
 2.	The doctor must be active.
@@ -124,115 +143,149 @@ The API enforces the following business rules:
 7.	A doctor cannot have two active bookings at the same start time.
 8.	A cancelled appointment cannot be cancelled again or rescheduled.
 9.	Cancelling a booking releases the slot.
-10.	An unsuccessful reschedule must not replace the original valid booking.
-The API uses meaningful HTTP status codes, including:
-•	201 Created — appointment successfully created.
-•	404 Not Found — requested doctor, patient, or appointment does not exist.
-•	409 Conflict — duplicate booking or an invalid appointment state, such as attempting to cancel an already cancelled appointment.
-•	422 Unprocessable Entity — invalid request data or a booking that violates the relevant scheduling rules.
+10.	An unsuccessful reschedule must not replace the original valid booking.  
+The API uses meaningful HTTP status codes, including:  
+  - ***201 Created*** — appointment successfully created.
+  -	***404 Not Found*** — requested doctor, patient, or appointment does not exist.
+  -	***409 Conflict*** — duplicate booking or an invalid appointment state, such as attempting to cancel an already cancelled appointment.
+  -	***422 Unprocessable Entity*** — invalid request data or a booking that violates the relevant scheduling rules.  
 Exact error responses depend on the validation failure.
-6. Prerequisites
-Before running the project locally, install:
-•	Python 3.10
-•	PostgreSQL
-•	Git
-•	A code editor such as Visual Studio Code
-7. Local Setup
-Step 1: Clone the repository
-git clone https://github.com/mwendakaberia/doctor-booking-api.git
+## 6. Prerequisites  
+Before running the project locally, install:  
+  -	Python 3.10
+  -	PostgreSQL
+  -	Git
+  -	A code editor such as Visual Studio Code
+## 7. Local Setup  
+  - Step 1: Clone the repository
+  ```
+git clone https://github.com/mwendakaberia/doctor-booking-api.git  
 cd doctor-booking-api
-Step 2: Create and activate a virtual environment
-On Windows PowerShell:
+```
+  - Step 2: Create and activate a virtual environment
+On Windows PowerShell:  
+```
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-Step 3: Install dependencies
+```
+  - Step 3: Install dependencies
+  ```
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-Step 4: Create the local databases
-Create a PostgreSQL application database named doctor_booking and a separate test database named doctor_booking_test.
-Use an appropriate local PostgreSQL user and password.
-Step 5: Configure environment variables
+```
+  - Step 4: Create the local databases
+Create a PostgreSQL application database named doctor_booking and a separate test database named doctor_booking_test.  
+Use an appropriate local PostgreSQL user and password.  
+  - Step 5: Configure environment variables
+  ```
 Create a .env file in the project root:
-DATABASE_URL=postgresql+psycopg://YOUR_LOCAL_USER:YOUR_LOCAL_PASSWORD@localhost:5432/doctor_booking
+DATABASE_URL=postgresql+psycopg://YOUR_LOCAL_USER:YOUR_LOCAL_PASSWORD@localhost:5432/doctor_booking  
 TEST_DATABASE_URL=postgresql+psycopg:// YOUR_LOCAL_USER:YOUR_LOCAL_PASSWORD@localhost:5432/doctor_booking_test
-Replace YOUR_LOCAL_USER and  YOUR_LOCAL_PASSWORD with the username and password configured for your local PostgreSQL user.
-Step 6: Apply database migrations
+```
+Replace YOUR_LOCAL_USER and  YOUR_LOCAL_PASSWORD with the username and password configured for your local PostgreSQL user.  
+  - Step 6: Apply database migrations
+  ```
 alembic upgrade head
+```
 This creates or updates the database schema using the committed Alembic migrations.
-Step 7: Add sample data
+   -Step 7: Add sample data
+   ```
 python -m app.seed
-The seed script creates sample doctor and patient data and configures sample working hours. It is intended for development and demonstration, not as a production data-management mechanism.
-Step 8: Start the API
+```
+The seed script creates sample doctor and patient data and configures sample working hours.   It is intended for development and demonstration, not as a production data-management mechanism.  
+  - Step 8: Start the API
+  ```
 uvicorn app.main:app --reload
-The local API is available at:
+```
+***The local API is available at:***
+```
 •	Root: http://127.0.0.1:8000/
 •	Health check: http://127.0.0.1:8000/health
 •	Interactive API documentation: http://127.0.0.1:8000/docs
-8. Automated Testing
+```
+## 8. Automated Testing  
 Run the test suite with:
+```
 python -m pytest -v
-The tests use TEST_DATABASE_URL, which must point to the separate doctor_booking_test database. Do not point the test suite at a database containing production or personal data.
-The test suite covers nine scenarios:
-1.	Successful appointment booking.
-2.	Prevention of duplicate bookings.
-3.	Successful cancellation.
-4.	Prevention of rescheduling cancelled appointments.
-5.	Retrieval of upcoming patient appointments.
-6.	Rejection of bookings outside working hours.
-7.	Rejection of appointments in the past.
-8.	Preservation of the original booking after a failed reschedule.
-9.	Reopening a time slot after cancellation.
-9. Database Migrations
+```
+The tests use TEST_DATABASE_URL, which must point to the separate doctor_booking_test database. Do not point the test suite at a database containing production or personal data.  
+***The test suite covers nine scenarios:***  
+    ```
+    1.	Successful appointment booking.  
+    2.	Prevention of duplicate bookings.  
+    3.	Successful cancellation.  
+    4.	Prevention of rescheduling cancelled appointments.  
+    5.	Retrieval of upcoming patient appointments.  
+    6.	Rejection of bookings outside working hours.  
+    7.	Rejection of appointments in the past.  
+    8.	Preservation of the original booking after a failed reschedule.  
+    9.	Reopening a time slot after cancellation.  
+    ```
+## 9. Database Migrations
 To create a migration after changing database models:
+```
 alembic revision --autogenerate -m "describe the schema change"
-Review the generated migration before applying it.
-Apply migrations with:
+```
+Review the generated migration before applying it.  
+Apply migrations with:  
+```
 alembic upgrade head
-The production deployment is configured to run migrations before starting the application, so the deployed database schema is updated as part of the release process.
-10. Cloud Deployment and CI/CD
-The API is hosted on Render, with PostgreSQL used for persistent storage.
-The GitHub Actions workflow is located at:
+```
+The production deployment is configured to run migrations before starting the application, so the deployed database schema is updated as part of the release process.  
+## 10. Cloud Deployment and CI/CD
+The API is hosted on Render, with PostgreSQL used for persistent storage.  
+The GitHub Actions workflow is located at:  
+```
 .github/workflows/tests.yml
-Workflow behavior
+```
+Workflow behavior  
+```
 1.	A push to main or a pull request targeting main starts the test workflow.
 2.	GitHub Actions starts a temporary PostgreSQL service for the test job.
 3.	Dependencies are installed and automated tests run.
 4.	The deployment job waits for the test job to succeed.
 5.	On a push to main, GitHub Actions invokes the Render deploy hook.
 6.	Pull requests run the tests but do not trigger the deployment job.
-The Render deploy hook is stored as the GitHub Actions repository secret RENDER_DEPLOY_HOOK_URL. 
-Production configuration
-Configure the Render service with the production database connection string in DATABASE_URL.
+```
+The Render deploy hook is stored as the GitHub Actions repository secret RENDER_DEPLOY_HOOK_URL.   
+***Production configuration***  
+Configure the Render service with the production database connection string in DATABASE_URL.  
 The service build command is:
+```
 pip install -r requirements.txt && alembic upgrade head
-The start command is:
+```
+The start command is:  
+```
 uvicorn app.main:app --host 0.0.0.0 --port $PORT
-Use the actual database connection URL provided by Render rather than the local .env value.
-After deployment, verify the health endpoint and interactive API documentation using the service's assigned public URL.
-Deployment status: The GitHub Actions test and deployment jobs have passed. A successful deploy-hook job confirms that the deployment request was accepted; the deployed service should also be checked for a healthy status.
-11. Assumptions and Limitations
-•	Appointment duration is fixed at 30 minutes.
-•	Scheduling uses a Nairobi UTC+3 offset.
-•	Doctor working hours must be configured in the database.
-•	The API does not yet implement user authentication or role-based authorization.
-•	Production access controls, patient-data privacy protections, rate limiting, monitoring, and a broader security review would be needed before handling real patient information.
-•	The current project is a demonstration of core appointment-booking workflows, not a complete production-ready clinic management platform.
-12. AI Assistance Reflection
-I approached the development of the Clinic Booking API by applying my existing programming and SQL knowledge to the implementation of the required endpoints, database relationships, queries, and appointment-booking rules. I used ChatGPT selectively as a supplementary resource when investigating unfamiliar tooling, resolving configuration issues, and evaluating possible solutions.
-One challenging aspect was configuring the automated test environment to work consistently with PostgreSQL in GitHub Actions. The application worked locally, but the CI environment initially failed because its database configuration did not match the application's expectations. This highlighted the importance of understanding the differences between local development and automated execution environments.
-I investigated the failure by examining the workflow configuration and error output, tracing how the application obtained its database connection settings, and confirming how the test database was initialized. I then corrected the configuration to provide the required database environment variables and a dedicated PostgreSQL service for automated tests. I verified the changes by rerunning the test suite and confirming that the workflow completed successfully.
-Throughout development, I treated external suggestions as hypotheses to investigate rather than solutions to accept automatically. I relied on error messages, application behavior, database state, and repeatable test results to determine whether a proposed change actually addressed the underlying problem.
-The project strengthened my understanding of end-to-end backend delivery, particularly the relationship between application logic, database integrity, automated testing, and deployment configuration. If I continued developing the system, I would prioritize authentication and authorization, more comprehensive concurrency testing, stronger timezone handling, production monitoring, and additional safeguards for patient information.
-12.1. An example where an AI suggestion improved my work and the prompt I used
-AI was helpful when setting up automated testing and deployment through GitHub Actions. It helped me understand how to configure a PostgreSQL service for the test environment and how to structure the workflow so that deployment would only proceed after the tests passed.
-Prompt used:
+```
+Use the actual database connection URL provided by Render rather than the local .env value.  
+After deployment, verify the health endpoint and interactive API documentation using the service's assigned public URL.  
+***Deployment status:*** The GitHub Actions test and deployment jobs have passed. A successful deploy-hook job confirms that the deployment request was accepted; the deployed service should also be checked for a healthy status.  
+## 11. Assumptions and Limitations
+    -	Appointment duration is fixed at 30 minutes.
+    -	Scheduling uses a Nairobi UTC+3 offset.
+    -	Doctor working hours must be configured in the database.
+    -	The API does not yet implement user authentication or role-based authorization.
+    -	Production access controls, patient-data privacy protections, rate limiting, monitoring, and a broader security review would be needed before handling real patient information.
+    -	The current project is a demonstration of core appointment-booking workflows, not a complete production-ready clinic management platform.
+## 12. AI Assistance Reflection
+I approached the development of the Clinic Booking API by applying my existing programming and SQL knowledge to the implementation of the required endpoints, database relationships, queries, and appointment-booking rules. I used ChatGPT selectively as a supplementary resource when investigating unfamiliar tooling, resolving configuration issues, and evaluating possible solutions.  
+One challenging aspect was configuring the automated test environment to work consistently with PostgreSQL in GitHub Actions. The application worked locally, but the CI environment initially failed because its database configuration did not match the application's expectations. This highlighted the importance of understanding the differences between local development and automated execution environments.  
+I investigated the failure by examining the workflow configuration and error output, tracing how the application obtained its database connection settings, and confirming how the test database was initialized. I then corrected the configuration to provide the required database environment variables and a dedicated PostgreSQL service for automated tests. I verified the changes by rerunning the test suite and confirming that the workflow completed successfully.  
+Throughout development, I treated external suggestions as hypotheses to investigate rather than solutions to accept automatically. I relied on error messages, application behavior, database state, and repeatable test results to determine whether a proposed change actually addressed the underlying problem.  
+The project strengthened my understanding of end-to-end backend delivery, particularly the relationship between application logic, database integrity, automated testing, and deployment configuration. If I continued developing the system, I would prioritize authentication and authorization, more comprehensive concurrency testing, stronger timezone handling, production monitoring, and additional safeguards for patient information.  
+### 12.1. An example where an AI suggestion improved my work and the prompt I used
+AI was helpful when setting up automated testing and deployment through GitHub Actions. It helped me understand how to configure a PostgreSQL service for the test environment and how to structure the workflow so that deployment would only proceed after the tests passed.  
+***Prompt used:***  
+```
 “My FastAPI Clinic Booking API uses PostgreSQL and pytest. Help me configure GitHub Actions to run the tests against a dedicated PostgreSQL test database and trigger deployment to Render only when the tests pass. Explain the required environment variables, workflow dependencies, and how I can verify that the setup works.”
-I applied the suggestions, checked the workflow configuration, and verified the results by running the tests and confirming that the GitHub Actions jobs completed successfully.
-12.2. An example where AI output was wrong or incomplete and how I caught it.
-While troubleshooting the CI database configuration, an AI-generated suggestion had focused on reusing the application's existing database URL without adequately accounting for the differences between my local environment and GitHub Actions. Such a suggestion would be incomplete because the CI runner cannot automatically access my local .env file, and a database URL that works locally may not work from the runner.
-I identified this issue by examining the workflow logs, checking the database environment variables, and confirming which database the tests were attempting to access. The appropriate correction was to configure a dedicated PostgreSQL service for automated testing and provide the correct test database connection settings. I then reran the tests to verify the fix.
-This reinforced the importance of checking AI suggestions against the actual configuration and test results rather than accepting them without verification.
-12.3. Two decisions I made without AI and Why I trusted my own judgment
-First, implementing and validating the SQL queries and database relationships. My professional experience involves SQL, database troubleshooting, and monitoring solutions. I was therefore comfortable reasoning about table relationships, joins, constraints, and the data required by the API. I trusted my judgment because I could validate the queries against the database structure and expected results.
-Second, defining and validating the appointment-booking rules. I made sure that the application accounted for requirements such as preventing duplicate active bookings, respecting doctors' working hours, rejecting bookings in the past, and preserving an existing appointment when a reschedule failed. I relied on my understanding of the business requirements and verified the behavior through automated tests. These decisions required applying the requirements consistently and checking that the implementation behaved as intended, rather than simply accepting a suggested solution.
+```
+I applied the suggestions, checked the workflow configuration, and verified the results by running the tests and confirming that the GitHub Actions jobs completed successfully.  
+### 12.2. An example where AI output was wrong or incomplete and how I caught it.
+While troubleshooting the CI database configuration, an AI-generated suggestion had focused on reusing the application's existing database URL without adequately accounting for the differences between my local environment and GitHub Actions. Such a suggestion would be incomplete because the CI runner cannot automatically access my local .env file, and a database URL that works locally may not work from the runner.  
+I identified this issue by examining the workflow logs, checking the database environment variables, and confirming which database the tests were attempting to access. The appropriate correction was to configure a dedicated PostgreSQL service for automated testing and provide the correct test database connection settings. I then reran the tests to verify the fix.  
+This reinforced the importance of checking AI suggestions against the actual configuration and test results rather than accepting them without verification.  
+### 12.3. Two decisions I made without AI and Why I trusted my own judgment
+***First***, implementing and validating the SQL queries and database relationships. My professional experience involves SQL, database troubleshooting, and monitoring solutions. I was therefore comfortable reasoning about table relationships, joins, constraints, and the data required by the API. I trusted my judgment because I could validate the queries against the database structure and expected results.  
+***Second***, defining and validating the appointment-booking rules. I made sure that the application accounted for requirements such as preventing duplicate active bookings, respecting doctors' working hours, rejecting bookings in the past, and preserving an existing appointment when a reschedule failed. I relied on my understanding of the business requirements and verified the behavior through automated tests. These decisions required applying the requirements consistently and checking that the implementation behaved as intended, rather than simply accepting a suggested solution.  
 
